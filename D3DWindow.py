@@ -106,7 +106,7 @@ class MyD3DWidget(QtWidgets.QDialog):
 		self.enlarge_button.setText(__translation(' ', '放大'))
 		self.return_button.setText(__translation(' ', '还原'))
 	
-	def save_figure( self ):
+	def save_figure(self):
 		
 		self.save_widget = QtWidgets.QFileDialog()
 		self.save_widget.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
