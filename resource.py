@@ -6,12 +6,18 @@
 #
 # WARNING! All changes made in this file will be lost!
 <<<<<<< HEAD
+<<<<<<< HEAD
 from childwindow import *
 from contourWindow import *
 from D3DWindow import *
 =======
 
 >>>>>>> the original program
+=======
+from childwindow import *
+from contourWindow import *
+from D3DWindow import *
+>>>>>>> show matplotlib use pyqt
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication,  QMainWindow
 from matplotlib import pyplot as plt
@@ -26,9 +32,12 @@ class Ui_MainWindow(QMainWindow):
 	playnumberSignal = QtCore.pyqtSignal(object)
 	temperatureSignal = QtCore.pyqtSignal(float, float)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	exitSignal = QtCore.pyqtSignal()
 >>>>>>> the original program
+=======
+>>>>>>> show matplotlib use pyqt
 	
 	def __init__(self):
 
@@ -152,9 +161,13 @@ class Ui_MainWindow(QMainWindow):
 		
 		self.horizontalLayout_2.addLayout(self.verticalLayout_3)
 <<<<<<< HEAD
+<<<<<<< HEAD
 		
 =======
 >>>>>>> the original program
+=======
+		
+>>>>>>> show matplotlib use pyqt
 		self.verticalLayout_2 = QtWidgets.QVBoxLayout()
 		self.verticalLayout_2.setObjectName("verticalLayout_2")
 		
@@ -188,6 +201,9 @@ class Ui_MainWindow(QMainWindow):
 		self.verticalLayout_2.addItem(spacerItem4)
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> show matplotlib use pyqt
 		# TODO:添加按钮
 		self.show1 = QtWidgets.QPushButton(self.layoutWidget)
 		self.show1.setObjectName("show3D")
@@ -242,8 +258,11 @@ class Ui_MainWindow(QMainWindow):
 		
 		
 		
+<<<<<<< HEAD
 =======
 >>>>>>> the original program
+=======
+>>>>>>> show matplotlib use pyqt
 		self.verticalLayout = QtWidgets.QVBoxLayout()
 		self.verticalLayout.setObjectName("verticalLayout")
 		
@@ -283,6 +302,7 @@ class Ui_MainWindow(QMainWindow):
 		
 		self.retranslateUi(MainWindow)
 <<<<<<< HEAD
+<<<<<<< HEAD
 		
 		'''信号与槽函数链接'''
 		'''退出'''
@@ -292,13 +312,21 @@ class Ui_MainWindow(QMainWindow):
 		self.playPause.clicked.connect(self.play_video)
 		
 =======
+=======
+		
+>>>>>>> show matplotlib use pyqt
 		'''信号与槽函数链接'''
 		'''退出'''
 		self.exitWindow.clicked.connect(self.close_all)
+		
 		'''播放'''
 		self.playPause.clicked.connect(self.play_video)
+<<<<<<< HEAD
 		self.exitSignal.connect(self.calculatethread.close_all)
 >>>>>>> the original program
+=======
+		
+>>>>>>> show matplotlib use pyqt
 		'''进度条'''
 		self.horizontalSlider.sliderPressed.connect(self.disconnect_horizontalSlider)
 		self.horizontalSlider.sliderReleased.connect(self.connect_horizontalSlider)
@@ -316,15 +344,20 @@ class Ui_MainWindow(QMainWindow):
 		'''截图'''
 		self.screenShot.clicked.connect(self.playthread.screen_shot)
 <<<<<<< HEAD
+<<<<<<< HEAD
 		self.calculatethread.originalpictureSignal.connect(self.show_original)
 =======
 >>>>>>> the original program
+=======
+		self.calculatethread.originalpictureSignal.connect(self.show_original)
+>>>>>>> show matplotlib use pyqt
 		self.screenShot.clicked.connect(self.set_enabled)
 
 		'''温度条'''
 		self.minTemperature.valueChanged.connect(self.set_temperature)
 		self.maxTemperature.valueChanged.connect(self.set_temperature)
 		
+<<<<<<< HEAD
 <<<<<<< HEAD
 		'''播放线程链接计算线程'''
 		self.playthread.TocalculateSignal.connect(self.calculatethread.get_picture)
@@ -342,13 +375,27 @@ class Ui_MainWindow(QMainWindow):
 		self.showContour.clicked.connect(self.calculatethread.draw_contour)
 		self.calculatethread.contourpictureSignal.connect(self.show_contour)
 =======
+=======
+		'''播放线程链接计算线程'''
+>>>>>>> show matplotlib use pyqt
 		self.playthread.TocalculateSignal.connect(self.calculatethread.get_picture)
 		self.temperatureSignal.connect(self.calculatethread.receive_temperature)
 		
+		'''灰度'''
 		self.showGray.clicked.connect(self.calculatethread.draw_gray)
+		self.calculatethread.graypictureSignal.connect(self.show_gray)
+		
+		'''3D'''
 		self.show3D.clicked.connect(self.calculatethread.draw_3D)
+		self.calculatethread.D3DpictureSignal.connect(self.show_D3D)
+		
+		'''云图'''
 		self.showContour.clicked.connect(self.calculatethread.draw_contour)
+<<<<<<< HEAD
 >>>>>>> the original program
+=======
+		self.calculatethread.contourpictureSignal.connect(self.show_contour)
+>>>>>>> show matplotlib use pyqt
 		
 		#self.exitWindow.clicked.connect(self.newthread.wait)
 		#self.exitWindow.clicked.connect(self.newthread.quit)
@@ -367,6 +414,9 @@ class Ui_MainWindow(QMainWindow):
 		self.showGray.setText(_translate("MainWindow", "灰度"))
 		self.show3D.setText(_translate("MainWindow", "3D"))
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> show matplotlib use pyqt
 		self.show1.setText(_translate("MainWindow", "1"))
 		self.show2.setText(_translate("MainWindow", "2"))
 		self.show3.setText(_translate("MainWindow", "3"))
@@ -377,8 +427,11 @@ class Ui_MainWindow(QMainWindow):
 		self.show8.setText(_translate("MainWindow", "8"))
 		self.show9.setText(_translate("MainWindow", "9"))
 		self.show10.setText(_translate("MainWindow", "10"))
+<<<<<<< HEAD
 =======
 >>>>>>> the original program
+=======
+>>>>>>> show matplotlib use pyqt
 		self.showContour.setText(_translate("MainWindow", "云图"))
 		self.checkBox.setText(_translate("MainWindow", "初始化"))
 		self.checkBox_4.setText(_translate("MainWindow", "最低温度"))
@@ -413,9 +466,13 @@ class Ui_MainWindow(QMainWindow):
 			
 			self.capcheck.release()
 <<<<<<< HEAD
+<<<<<<< HEAD
 			
 =======
 >>>>>>> the original program
+=======
+			
+>>>>>>> show matplotlib use pyqt
 			self.playthread.receive_address(self.filename)
 			self.begin = True
 		
@@ -474,6 +531,9 @@ class Ui_MainWindow(QMainWindow):
 		self.showGray.setDisabled(False)
 	
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> show matplotlib use pyqt
 	def show_gray(self, gray):
 		
 		self.Mygray = MyWidget()
@@ -498,8 +558,11 @@ class Ui_MainWindow(QMainWindow):
 		self.Myoriginal.mpl.start_static_plot(original, flag='original')
 		self.Myoriginal.exec()
 	
+<<<<<<< HEAD
 =======
 >>>>>>> the original program
+=======
+>>>>>>> show matplotlib use pyqt
 	def close_all(self):
 		
 		print(self.newthread1.currentThreadId(), self.newthread2.currentThreadId())
@@ -511,13 +574,17 @@ class Ui_MainWindow(QMainWindow):
 		
 		self.newthread1.quit()
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		self.exitSignal.emit()
 >>>>>>> the original program
+=======
+>>>>>>> show matplotlib use pyqt
 		self.newthread2.quit()
 		print(self.newthread1.isFinished())
 		print(self.newthread2.isFinished())
 		
+<<<<<<< HEAD
 <<<<<<< HEAD
 		self.newthread1.wait()
 		self.newthread2.wait()
@@ -531,6 +598,12 @@ class Ui_MainWindow(QMainWindow):
 		
 		
 >>>>>>> the original program
+=======
+		self.newthread1.wait()
+		self.newthread2.wait()
+		print(self.newthread1.isFinished())
+		print(self.newthread2.isFinished())
+>>>>>>> show matplotlib use pyqt
 		self.close()
 		
 		
@@ -619,14 +692,20 @@ class PlayerThread(QtCore.QObject):
 class CalculateThread(QtCore.QObject):
 	
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> show matplotlib use pyqt
 	graypictureSignal = QtCore.pyqtSignal(object)
 	D3DpictureSignal = QtCore.pyqtSignal(object)
 	contourpictureSignal = QtCore.pyqtSignal(object)
 	originalpictureSignal = QtCore.pyqtSignal(object)
 	
 	
+<<<<<<< HEAD
 =======
 >>>>>>> the original program
+=======
+>>>>>>> show matplotlib use pyqt
 	def __init__(self, parent = None):
 		super().__init__(parent)
 		self.image = np.ones((576, 720, 3), np.uint8) *255
@@ -679,6 +758,9 @@ class CalculateThread(QtCore.QObject):
 		self.renovationcontour = True
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> show matplotlib use pyqt
 		self.originalpictureSignal.emit(self.image)
 		
 		# plt.close()
@@ -687,6 +769,7 @@ class CalculateThread(QtCore.QObject):
 		# plt.close()
 		# plt.clf()
 	
+<<<<<<< HEAD
 =======
 		plt.close()
 		plt.imshow(self.image)
@@ -694,12 +777,15 @@ class CalculateThread(QtCore.QObject):
 		plt.close()
 		plt.clf()
 >>>>>>> the original program
+=======
+>>>>>>> show matplotlib use pyqt
 	def receive_temperature(self, high, low):
 		self.high = high
 		self.low = low
 		print(self.high, self.low)
 		
 	def draw_gray(self):
+<<<<<<< HEAD
 <<<<<<< HEAD
 		
 		self.graypictureSignal.emit(self.gray)
@@ -711,11 +797,17 @@ class CalculateThread(QtCore.QObject):
 		plt.show()
 		plt.close()
 		plt.clf()
+=======
+>>>>>>> show matplotlib use pyqt
 		
+		self.graypictureSignal.emit(self.gray)
 		
 	def draw_3D(self):
+<<<<<<< HEAD
 		plt.close()
 >>>>>>> the original program
+=======
+>>>>>>> show matplotlib use pyqt
 		if self.renovation3D:
 			self.D3D = self.gray.copy()
 			for i in range(3):
@@ -730,6 +822,9 @@ class CalculateThread(QtCore.QObject):
 					self.D3D1[col3d][row3d] = self.low + (self.temp3D - self.temperaturedict[self.low]) * self.k
 			self.renovation3D = False
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> show matplotlib use pyqt
 		self.D3DpictureSignal.emit(self.D3D1)
 		
 		# self.x3D = np.arange(0, self.picturewidth3D, 1)
@@ -742,6 +837,7 @@ class CalculateThread(QtCore.QObject):
 		# plt.show()
 		# plt.close()
 		# plt.clf()
+<<<<<<< HEAD
 =======
 			
 		self.x3D = np.arange(0, self.picturewidth3D, 1)
@@ -755,6 +851,8 @@ class CalculateThread(QtCore.QObject):
 		plt.close()
 		plt.clf()
 >>>>>>> the original program
+=======
+>>>>>>> show matplotlib use pyqt
 	
 	def draw_contour(self):
 		plt.close()
@@ -771,6 +869,9 @@ class CalculateThread(QtCore.QObject):
 					self.contour1[col][row] = self.low + (self.temp - self.temperaturedict[self.low]) * self.k
 					self.renovationcontour = False
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> show matplotlib use pyqt
 		self.contourpictureSignal.emit(self.contour1)
 		
 		# self.xcontour = np.arange(0, self.picturewidth, 1)
@@ -788,6 +889,7 @@ class CalculateThread(QtCore.QObject):
 		# plt.close()
 		# plt.clf()
 
+<<<<<<< HEAD
 =======
 			self.xcontour = np.arange(0, self.picturewidth, 1)
 			self.ycontour = np.arange(0, self.pictureheight, 1)
@@ -808,3 +910,5 @@ class CalculateThread(QtCore.QObject):
 		plt.close('all')
 		plt.clf()
 >>>>>>> the original program
+=======
+>>>>>>> show matplotlib use pyqt
