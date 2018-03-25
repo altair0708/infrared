@@ -5,7 +5,9 @@
 # Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
-
+from childwindow import *
+from contourWindow import *
+from D3DWindow import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication,  QMainWindow
 from matplotlib import pyplot as plt
@@ -19,7 +21,6 @@ class Ui_MainWindow(QMainWindow):
 	
 	playnumberSignal = QtCore.pyqtSignal(object)
 	temperatureSignal = QtCore.pyqtSignal(float, float)
-	exitSignal = QtCore.pyqtSignal()
 	
 	def __init__(self):
 
@@ -142,6 +143,7 @@ class Ui_MainWindow(QMainWindow):
 		self.verticalLayout_3.addLayout(self.horizontalLayout_3)
 		
 		self.horizontalLayout_2.addLayout(self.verticalLayout_3)
+		
 		self.verticalLayout_2 = QtWidgets.QVBoxLayout()
 		self.verticalLayout_2.setObjectName("verticalLayout_2")
 		
@@ -173,6 +175,60 @@ class Ui_MainWindow(QMainWindow):
 		
 		spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
 		self.verticalLayout_2.addItem(spacerItem4)
+		
+		# TODO:添加按钮
+		self.show1 = QtWidgets.QPushButton(self.layoutWidget)
+		self.show1.setObjectName("show3D")
+		self.show1.setDisabled(True)
+		self.verticalLayout_2.addWidget(self.show1)
+		
+		self.show2 = QtWidgets.QPushButton(self.layoutWidget)
+		self.show2.setObjectName("show3D")
+		self.show2.setDisabled(True)
+		self.verticalLayout_2.addWidget(self.show2)
+		
+		self.show3 = QtWidgets.QPushButton(self.layoutWidget)
+		self.show3.setObjectName("show3D")
+		self.show3.setDisabled(True)
+		self.verticalLayout_2.addWidget(self.show3)
+		
+		self.show4 = QtWidgets.QPushButton(self.layoutWidget)
+		self.show4.setObjectName("show3D")
+		self.show4.setDisabled(True)
+		self.verticalLayout_2.addWidget(self.show4)
+		
+		self.show5 = QtWidgets.QPushButton(self.layoutWidget)
+		self.show5.setObjectName("show3D")
+		self.show5.setDisabled(True)
+		self.verticalLayout_2.addWidget(self.show5)
+		
+		self.show6 = QtWidgets.QPushButton(self.layoutWidget)
+		self.show6.setObjectName("show3D")
+		self.show6.setDisabled(True)
+		self.verticalLayout_2.addWidget(self.show6)
+		
+		self.show7 = QtWidgets.QPushButton(self.layoutWidget)
+		self.show7.setObjectName("show3D")
+		self.show7.setDisabled(True)
+		self.verticalLayout_2.addWidget(self.show7)
+		
+		self.show8 = QtWidgets.QPushButton(self.layoutWidget)
+		self.show8.setObjectName("show3D")
+		self.show8.setDisabled(True)
+		self.verticalLayout_2.addWidget(self.show8)
+		
+		self.show9 = QtWidgets.QPushButton(self.layoutWidget)
+		self.show9.setObjectName("show3D")
+		self.show9.setDisabled(True)
+		self.verticalLayout_2.addWidget(self.show9)
+		
+		self.show10 = QtWidgets.QPushButton(self.layoutWidget)
+		self.show10.setObjectName("show3D")
+		self.show10.setDisabled(True)
+		self.verticalLayout_2.addWidget(self.show10)
+		
+		
+		
 		
 		self.verticalLayout = QtWidgets.QVBoxLayout()
 		self.verticalLayout.setObjectName("verticalLayout")
@@ -212,12 +268,14 @@ class Ui_MainWindow(QMainWindow):
 		MainWindow.setCentralWidget(self.centralwidget)
 		
 		self.retranslateUi(MainWindow)
+		
 		'''信号与槽函数链接'''
 		'''退出'''
 		self.exitWindow.clicked.connect(self.close_all)
+		
 		'''播放'''
 		self.playPause.clicked.connect(self.play_video)
-		self.exitSignal.connect(self.calculatethread.close_all)
+		
 		'''进度条'''
 		self.horizontalSlider.sliderPressed.connect(self.disconnect_horizontalSlider)
 		self.horizontalSlider.sliderReleased.connect(self.connect_horizontalSlider)
@@ -234,18 +292,28 @@ class Ui_MainWindow(QMainWindow):
 		
 		'''截图'''
 		self.screenShot.clicked.connect(self.playthread.screen_shot)
+		self.calculatethread.originalpictureSignal.connect(self.show_original)
 		self.screenShot.clicked.connect(self.set_enabled)
 
 		'''温度条'''
 		self.minTemperature.valueChanged.connect(self.set_temperature)
 		self.maxTemperature.valueChanged.connect(self.set_temperature)
 		
+		'''播放线程链接计算线程'''
 		self.playthread.TocalculateSignal.connect(self.calculatethread.get_picture)
 		self.temperatureSignal.connect(self.calculatethread.receive_temperature)
 		
+		'''灰度'''
 		self.showGray.clicked.connect(self.calculatethread.draw_gray)
+		self.calculatethread.graypictureSignal.connect(self.show_gray)
+		
+		'''3D'''
 		self.show3D.clicked.connect(self.calculatethread.draw_3D)
+		self.calculatethread.D3DpictureSignal.connect(self.show_D3D)
+		
+		'''云图'''
 		self.showContour.clicked.connect(self.calculatethread.draw_contour)
+		self.calculatethread.contourpictureSignal.connect(self.show_contour)
 		
 		#self.exitWindow.clicked.connect(self.newthread.wait)
 		#self.exitWindow.clicked.connect(self.newthread.quit)
@@ -263,6 +331,16 @@ class Ui_MainWindow(QMainWindow):
 		self.maxLabel.setText(_translate("MainWindow", "最高温度"))
 		self.showGray.setText(_translate("MainWindow", "灰度"))
 		self.show3D.setText(_translate("MainWindow", "3D"))
+		self.show1.setText(_translate("MainWindow", "1"))
+		self.show2.setText(_translate("MainWindow", "2"))
+		self.show3.setText(_translate("MainWindow", "3"))
+		self.show4.setText(_translate("MainWindow", "4"))
+		self.show5.setText(_translate("MainWindow", "5"))
+		self.show6.setText(_translate("MainWindow", "6"))
+		self.show7.setText(_translate("MainWindow", "7"))
+		self.show8.setText(_translate("MainWindow", "8"))
+		self.show9.setText(_translate("MainWindow", "9"))
+		self.show10.setText(_translate("MainWindow", "10"))
 		self.showContour.setText(_translate("MainWindow", "云图"))
 		self.checkBox.setText(_translate("MainWindow", "初始化"))
 		self.checkBox_4.setText(_translate("MainWindow", "最低温度"))
@@ -296,6 +374,7 @@ class Ui_MainWindow(QMainWindow):
 				return
 			
 			self.capcheck.release()
+			
 			self.playthread.receive_address(self.filename)
 			self.begin = True
 		
@@ -353,6 +432,30 @@ class Ui_MainWindow(QMainWindow):
 		self.showContour.setDisabled(False)
 		self.showGray.setDisabled(False)
 	
+	def show_gray(self, gray):
+		
+		self.Mygray = MyWidget()
+		self.Mygray.mpl.start_static_plot(gray, flag='gray')
+		self.Mygray.exec()
+	
+	def show_D3D(self, D3D):
+		
+		self.MyD3D = MyD3DWidget()
+		self.MyD3D.mpl.start_static_plot(D3D, flag='D3D')
+		self.MyD3D.exec()
+	
+	def show_contour(self, contour):
+		
+		self.Mycontour = MyContourWidget()
+		self.Mycontour.mpl.start_static_plot(contour, flag='contour')
+		self.Mycontour.exec()
+	
+	def show_original(self, original):
+		
+		self.Myoriginal = MyWidget()
+		self.Myoriginal.mpl.start_static_plot(original, flag='original')
+		self.Myoriginal.exec()
+	
 	def close_all(self):
 		
 		print(self.newthread1.currentThreadId(), self.newthread2.currentThreadId())
@@ -363,17 +466,14 @@ class Ui_MainWindow(QMainWindow):
 		print(self.newthread1.isFinished())
 		
 		self.newthread1.quit()
-		self.exitSignal.emit()
 		self.newthread2.quit()
 		print(self.newthread1.isFinished())
 		print(self.newthread2.isFinished())
 		
-		self.newthread1.wait(500)
-		self.newthread2.wait(500)
+		self.newthread1.wait()
+		self.newthread2.wait()
 		print(self.newthread1.isFinished())
 		print(self.newthread2.isFinished())
-		
-		
 		self.close()
 		
 		
@@ -461,6 +561,12 @@ class PlayerThread(QtCore.QObject):
 
 class CalculateThread(QtCore.QObject):
 	
+	graypictureSignal = QtCore.pyqtSignal(object)
+	D3DpictureSignal = QtCore.pyqtSignal(object)
+	contourpictureSignal = QtCore.pyqtSignal(object)
+	originalpictureSignal = QtCore.pyqtSignal(object)
+	
+	
 	def __init__(self, parent = None):
 		super().__init__(parent)
 		self.image = np.ones((576, 720, 3), np.uint8) *255
@@ -512,26 +618,24 @@ class CalculateThread(QtCore.QObject):
 		self.renovation3D = True
 		self.renovationcontour = True
 		
-		plt.close()
-		plt.imshow(self.image)
-		plt.show()
-		plt.close()
-		plt.clf()
+		self.originalpictureSignal.emit(self.image)
+		
+		# plt.close()
+		# plt.imshow(self.image)
+		# plt.show()
+		# plt.close()
+		# plt.clf()
+	
 	def receive_temperature(self, high, low):
 		self.high = high
 		self.low = low
 		print(self.high, self.low)
 		
 	def draw_gray(self):
-		plt.close()
-		plt.imshow(self.gray, cmap='gray')
-		plt.show()
-		plt.close()
-		plt.clf()
 		
+		self.graypictureSignal.emit(self.gray)
 		
 	def draw_3D(self):
-		plt.close()
 		if self.renovation3D:
 			self.D3D = self.gray.copy()
 			for i in range(3):
@@ -545,17 +649,18 @@ class CalculateThread(QtCore.QObject):
 					self.temp3D = self.D3D[col3d][row3d]
 					self.D3D1[col3d][row3d] = self.low + (self.temp3D - self.temperaturedict[self.low]) * self.k
 			self.renovation3D = False
-			
-		self.x3D = np.arange(0, self.picturewidth3D, 1)
-		self.y3D = np.arange(0, self.pictureheight3D, 1)
-		self.x3D, self.y3D = np.meshgrid(self.x3D, self.y3D)
-		self.D3D1 = cv2.flip(self.D3D1, 0)
-		self.fig3d = plt.figure()
-		self.ax = Axes3D(self.fig3d)
-		self.ax.plot_surface(self.x3D, self.y3D, self.D3D1[self.y3D, self.x3D], rstride=2, cstride=2, cmap='rainbow')
-		plt.show()
-		plt.close()
-		plt.clf()
+		self.D3DpictureSignal.emit(self.D3D1)
+		
+		# self.x3D = np.arange(0, self.picturewidth3D, 1)
+		# self.y3D = np.arange(0, self.pictureheight3D, 1)
+		# self.x3D, self.y3D = np.meshgrid(self.x3D, self.y3D)
+		# self.D3D1 = cv2.flip(self.D3D1, 0)
+		# self.fig3d = plt.figure()
+		# self.ax = Axes3D(self.fig3d)
+		# self.ax.plot_surface(self.x3D, self.y3D, self.D3D1[self.y3D, self.x3D], rstride=2, cstride=2, cmap='rainbow')
+		# plt.show()
+		# plt.close()
+		# plt.clf()
 	
 	def draw_contour(self):
 		plt.close()
@@ -571,21 +676,20 @@ class CalculateThread(QtCore.QObject):
 					self.temp = self.contour[col][row]
 					self.contour1[col][row] = self.low + (self.temp - self.temperaturedict[self.low]) * self.k
 					self.renovationcontour = False
-			self.xcontour = np.arange(0, self.picturewidth, 1)
-			self.ycontour = np.arange(0, self.pictureheight, 1)
-			self.xcontour, self.ycontour = np.meshgrid(self.xcontour, self.ycontour)
-			print(self.contour1.max())
-			self.contour1 = cv2.flip(self.contour1, 0)
-			print(self.contour1.max())
-		self.contourline = plt.contour(self.xcontour, self.ycontour, self.contour1[self.ycontour, self.xcontour], 10,
-		                        colors = 'black', linewidths = 1)
+		self.contourpictureSignal.emit(self.contour1)
 		
-		plt.clabel(self.contourline, inline = True, inline_spacing = 5, fontsize = 10, fmt = '%.1f')
-		plt.contourf(self.xcontour, self.ycontour, self.contour1[self.ycontour, self.xcontour], 10, cmap='rainbow')
-		plt.show()
-		plt.close()
-		plt.clf()
-	
-	def close_all(self):
-		plt.close('all')
-		plt.clf()
+		# self.xcontour = np.arange(0, self.picturewidth, 1)
+		# self.ycontour = np.arange(0, self.pictureheight, 1)
+		# self.xcontour, self.ycontour = np.meshgrid(self.xcontour, self.ycontour)
+		# print(self.contour1.max())
+		# self.contour1 = cv2.flip(self.contour1, 0)
+		# print(self.contour1.max())
+		#
+		# self.contourline = plt.contour(self.xcontour, self.ycontour, self.contour1[self.ycontour, self.xcontour], 10,
+		#                         colors = 'black', linewidths = 1)
+		# plt.clabel(self.contourline, inline = True, inline_spacing = 5, fontsize = 10, fmt = '%.1f')
+		# plt.contourf(self.xcontour, self.ycontour, self.contour1[self.ycontour, self.xcontour], 10, cmap='rainbow')
+		# plt.show()
+		# plt.close()
+		# plt.clf()
+
