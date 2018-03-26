@@ -5,9 +5,13 @@
 # Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
+<<<<<<< HEAD
 from childwindow import *
 from contourWindow import *
 from D3DWindow import *
+=======
+
+>>>>>>> the original program
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication,  QMainWindow
 from matplotlib import pyplot as plt
@@ -21,6 +25,10 @@ class Ui_MainWindow(QMainWindow):
 	
 	playnumberSignal = QtCore.pyqtSignal(object)
 	temperatureSignal = QtCore.pyqtSignal(float, float)
+<<<<<<< HEAD
+=======
+	exitSignal = QtCore.pyqtSignal()
+>>>>>>> the original program
 	
 	def __init__(self):
 
@@ -143,7 +151,10 @@ class Ui_MainWindow(QMainWindow):
 		self.verticalLayout_3.addLayout(self.horizontalLayout_3)
 		
 		self.horizontalLayout_2.addLayout(self.verticalLayout_3)
+<<<<<<< HEAD
 		
+=======
+>>>>>>> the original program
 		self.verticalLayout_2 = QtWidgets.QVBoxLayout()
 		self.verticalLayout_2.setObjectName("verticalLayout_2")
 		
@@ -176,6 +187,7 @@ class Ui_MainWindow(QMainWindow):
 		spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
 		self.verticalLayout_2.addItem(spacerItem4)
 		
+<<<<<<< HEAD
 		# TODO:添加按钮
 		self.show1 = QtWidgets.QPushButton(self.layoutWidget)
 		self.show1.setObjectName("show3D")
@@ -230,6 +242,8 @@ class Ui_MainWindow(QMainWindow):
 		
 		
 		
+=======
+>>>>>>> the original program
 		self.verticalLayout = QtWidgets.QVBoxLayout()
 		self.verticalLayout.setObjectName("verticalLayout")
 		
@@ -268,6 +282,7 @@ class Ui_MainWindow(QMainWindow):
 		MainWindow.setCentralWidget(self.centralwidget)
 		
 		self.retranslateUi(MainWindow)
+<<<<<<< HEAD
 		
 		'''信号与槽函数链接'''
 		'''退出'''
@@ -276,6 +291,14 @@ class Ui_MainWindow(QMainWindow):
 		'''播放'''
 		self.playPause.clicked.connect(self.play_video)
 		
+=======
+		'''信号与槽函数链接'''
+		'''退出'''
+		self.exitWindow.clicked.connect(self.close_all)
+		'''播放'''
+		self.playPause.clicked.connect(self.play_video)
+		self.exitSignal.connect(self.calculatethread.close_all)
+>>>>>>> the original program
 		'''进度条'''
 		self.horizontalSlider.sliderPressed.connect(self.disconnect_horizontalSlider)
 		self.horizontalSlider.sliderReleased.connect(self.connect_horizontalSlider)
@@ -292,13 +315,17 @@ class Ui_MainWindow(QMainWindow):
 		
 		'''截图'''
 		self.screenShot.clicked.connect(self.playthread.screen_shot)
+<<<<<<< HEAD
 		self.calculatethread.originalpictureSignal.connect(self.show_original)
+=======
+>>>>>>> the original program
 		self.screenShot.clicked.connect(self.set_enabled)
 
 		'''温度条'''
 		self.minTemperature.valueChanged.connect(self.set_temperature)
 		self.maxTemperature.valueChanged.connect(self.set_temperature)
 		
+<<<<<<< HEAD
 		'''播放线程链接计算线程'''
 		self.playthread.TocalculateSignal.connect(self.calculatethread.get_picture)
 		self.temperatureSignal.connect(self.calculatethread.receive_temperature)
@@ -314,6 +341,14 @@ class Ui_MainWindow(QMainWindow):
 		'''云图'''
 		self.showContour.clicked.connect(self.calculatethread.draw_contour)
 		self.calculatethread.contourpictureSignal.connect(self.show_contour)
+=======
+		self.playthread.TocalculateSignal.connect(self.calculatethread.get_picture)
+		self.temperatureSignal.connect(self.calculatethread.receive_temperature)
+		
+		self.showGray.clicked.connect(self.calculatethread.draw_gray)
+		self.show3D.clicked.connect(self.calculatethread.draw_3D)
+		self.showContour.clicked.connect(self.calculatethread.draw_contour)
+>>>>>>> the original program
 		
 		#self.exitWindow.clicked.connect(self.newthread.wait)
 		#self.exitWindow.clicked.connect(self.newthread.quit)
@@ -331,6 +366,7 @@ class Ui_MainWindow(QMainWindow):
 		self.maxLabel.setText(_translate("MainWindow", "最高温度"))
 		self.showGray.setText(_translate("MainWindow", "灰度"))
 		self.show3D.setText(_translate("MainWindow", "3D"))
+<<<<<<< HEAD
 		self.show1.setText(_translate("MainWindow", "1"))
 		self.show2.setText(_translate("MainWindow", "2"))
 		self.show3.setText(_translate("MainWindow", "3"))
@@ -341,6 +377,8 @@ class Ui_MainWindow(QMainWindow):
 		self.show8.setText(_translate("MainWindow", "8"))
 		self.show9.setText(_translate("MainWindow", "9"))
 		self.show10.setText(_translate("MainWindow", "10"))
+=======
+>>>>>>> the original program
 		self.showContour.setText(_translate("MainWindow", "云图"))
 		self.checkBox.setText(_translate("MainWindow", "初始化"))
 		self.checkBox_4.setText(_translate("MainWindow", "最低温度"))
@@ -374,7 +412,10 @@ class Ui_MainWindow(QMainWindow):
 				return
 			
 			self.capcheck.release()
+<<<<<<< HEAD
 			
+=======
+>>>>>>> the original program
 			self.playthread.receive_address(self.filename)
 			self.begin = True
 		
@@ -432,6 +473,7 @@ class Ui_MainWindow(QMainWindow):
 		self.showContour.setDisabled(False)
 		self.showGray.setDisabled(False)
 	
+<<<<<<< HEAD
 	def show_gray(self, gray):
 		
 		self.Mygray = MyWidget()
@@ -456,6 +498,8 @@ class Ui_MainWindow(QMainWindow):
 		self.Myoriginal.mpl.start_static_plot(original, flag='original')
 		self.Myoriginal.exec()
 	
+=======
+>>>>>>> the original program
 	def close_all(self):
 		
 		print(self.newthread1.currentThreadId(), self.newthread2.currentThreadId())
@@ -466,14 +510,27 @@ class Ui_MainWindow(QMainWindow):
 		print(self.newthread1.isFinished())
 		
 		self.newthread1.quit()
+<<<<<<< HEAD
+=======
+		self.exitSignal.emit()
+>>>>>>> the original program
 		self.newthread2.quit()
 		print(self.newthread1.isFinished())
 		print(self.newthread2.isFinished())
 		
+<<<<<<< HEAD
 		self.newthread1.wait()
 		self.newthread2.wait()
 		print(self.newthread1.isFinished())
 		print(self.newthread2.isFinished())
+=======
+		self.newthread1.wait(500)
+		self.newthread2.wait(500)
+		print(self.newthread1.isFinished())
+		print(self.newthread2.isFinished())
+		
+		
+>>>>>>> the original program
 		self.close()
 		
 		
@@ -561,12 +618,15 @@ class PlayerThread(QtCore.QObject):
 
 class CalculateThread(QtCore.QObject):
 	
+<<<<<<< HEAD
 	graypictureSignal = QtCore.pyqtSignal(object)
 	D3DpictureSignal = QtCore.pyqtSignal(object)
 	contourpictureSignal = QtCore.pyqtSignal(object)
 	originalpictureSignal = QtCore.pyqtSignal(object)
 	
 	
+=======
+>>>>>>> the original program
 	def __init__(self, parent = None):
 		super().__init__(parent)
 		self.image = np.ones((576, 720, 3), np.uint8) *255
@@ -618,6 +678,7 @@ class CalculateThread(QtCore.QObject):
 		self.renovation3D = True
 		self.renovationcontour = True
 		
+<<<<<<< HEAD
 		self.originalpictureSignal.emit(self.image)
 		
 		# plt.close()
@@ -626,16 +687,35 @@ class CalculateThread(QtCore.QObject):
 		# plt.close()
 		# plt.clf()
 	
+=======
+		plt.close()
+		plt.imshow(self.image)
+		plt.show()
+		plt.close()
+		plt.clf()
+>>>>>>> the original program
 	def receive_temperature(self, high, low):
 		self.high = high
 		self.low = low
 		print(self.high, self.low)
 		
 	def draw_gray(self):
+<<<<<<< HEAD
 		
 		self.graypictureSignal.emit(self.gray)
 		
 	def draw_3D(self):
+=======
+		plt.close()
+		plt.imshow(self.gray, cmap='gray')
+		plt.show()
+		plt.close()
+		plt.clf()
+		
+		
+	def draw_3D(self):
+		plt.close()
+>>>>>>> the original program
 		if self.renovation3D:
 			self.D3D = self.gray.copy()
 			for i in range(3):
@@ -649,6 +729,7 @@ class CalculateThread(QtCore.QObject):
 					self.temp3D = self.D3D[col3d][row3d]
 					self.D3D1[col3d][row3d] = self.low + (self.temp3D - self.temperaturedict[self.low]) * self.k
 			self.renovation3D = False
+<<<<<<< HEAD
 		self.D3DpictureSignal.emit(self.D3D1)
 		
 		# self.x3D = np.arange(0, self.picturewidth3D, 1)
@@ -661,6 +742,19 @@ class CalculateThread(QtCore.QObject):
 		# plt.show()
 		# plt.close()
 		# plt.clf()
+=======
+			
+		self.x3D = np.arange(0, self.picturewidth3D, 1)
+		self.y3D = np.arange(0, self.pictureheight3D, 1)
+		self.x3D, self.y3D = np.meshgrid(self.x3D, self.y3D)
+		self.D3D1 = cv2.flip(self.D3D1, 0)
+		self.fig3d = plt.figure()
+		self.ax = Axes3D(self.fig3d)
+		self.ax.plot_surface(self.x3D, self.y3D, self.D3D1[self.y3D, self.x3D], rstride=2, cstride=2, cmap='rainbow')
+		plt.show()
+		plt.close()
+		plt.clf()
+>>>>>>> the original program
 	
 	def draw_contour(self):
 		plt.close()
@@ -676,6 +770,7 @@ class CalculateThread(QtCore.QObject):
 					self.temp = self.contour[col][row]
 					self.contour1[col][row] = self.low + (self.temp - self.temperaturedict[self.low]) * self.k
 					self.renovationcontour = False
+<<<<<<< HEAD
 		self.contourpictureSignal.emit(self.contour1)
 		
 		# self.xcontour = np.arange(0, self.picturewidth, 1)
@@ -693,3 +788,23 @@ class CalculateThread(QtCore.QObject):
 		# plt.close()
 		# plt.clf()
 
+=======
+			self.xcontour = np.arange(0, self.picturewidth, 1)
+			self.ycontour = np.arange(0, self.pictureheight, 1)
+			self.xcontour, self.ycontour = np.meshgrid(self.xcontour, self.ycontour)
+			print(self.contour1.max())
+			self.contour1 = cv2.flip(self.contour1, 0)
+			print(self.contour1.max())
+		self.contourline = plt.contour(self.xcontour, self.ycontour, self.contour1[self.ycontour, self.xcontour], 10,
+		                        colors = 'black', linewidths = 1)
+		
+		plt.clabel(self.contourline, inline = True, inline_spacing = 5, fontsize = 10, fmt = '%.1f')
+		plt.contourf(self.xcontour, self.ycontour, self.contour1[self.ycontour, self.xcontour], 10, cmap='rainbow')
+		plt.show()
+		plt.close()
+		plt.clf()
+	
+	def close_all(self):
+		plt.close('all')
+		plt.clf()
+>>>>>>> the original program
