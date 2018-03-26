@@ -1,6 +1,9 @@
 import matplotlib
 matplotlib.use("Qt5Agg")  # 声明使用QT5
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backend_bases import FigureManagerBase as FigureManger
+from matplotlib.backend_bases import RendererBase as Renderer
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -17,15 +20,15 @@ class MyContourCanvas(FigureCanvas):
 		plt.rcParams['font.family'] = ['SimHei']
 		plt.rcParams['axes.unicode_minus'] = False
 		
-		self.fig = Figure(figsize=(width, height), dpi=dpi)
+		self.fig = plt.figure(figsize=(width, height), dpi=dpi)
 		
 		#self.axes = self.fig.add_subplot(111)
 		
-		FigureCanvas.__init__(self, self.fig)
+		super().__init__(self.fig)
 		self.setParent(parent)
 		
-		FigureCanvas.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-		FigureCanvas.updateGeometry(self)
+		self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+		self.updateGeometry()
 		
 	def start_static_plot(self, picture, flag='gray'):
 		
@@ -51,7 +54,9 @@ class MyContourCanvas(FigureCanvas):
 		elif flag == 'contour':
 			
 			self.fig.suptitle('等温线图像')
+			
 			self.axes = self.fig.add_subplot(1, 1, 1)
+			self.axes.axis('equal')
 			self.contour = picture.copy()
 			self.pictureheight, self.picturewidth = self.contour.shape[:2]
 			self.xcontour = np.arange(0, self.picturewidth, 1)
@@ -62,11 +67,41 @@ class MyContourCanvas(FigureCanvas):
 			                               10, colors='black', linewidths=1)
 			self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
 			self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour], 10, cmap='rainbow')
-		
+			
 		elif flag == 'original':
 			
 			self.fig.suptitle('原始图像')
 			self.fig.figimage(picture, resize=True)
+			
+	def show_contour(self):
+		
+		self.fig.clear()
+		self.axes = self.fig.add_subplot(1, 1, 1)
+		self.contourline = self.axes.contour(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour],
+		                                     10, cmap='rainbow', linewidths=2)
+		self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
+		self.fig.draw(renderer=self.renderer)
+		self.blit(self.fig.bbox)
+		
+	def show_contourf(self):
+		
+		self.fig.clear()
+		self.axes = self.fig.add_subplot(1, 1, 1)
+		self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour], 10, cmap='rainbow')
+		self.fig.draw(renderer=self.renderer)
+		self.blit(self.fig.bbox)
+		
+	def show_all(self):
+		
+		self.fig.clear()
+		self.axes = self.fig.add_subplot(1, 1, 1)
+		self.contourline = self.axes.contour(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour],
+		                                     10, colors='black', linewidths=1)
+		self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
+		self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour], 10, cmap='rainbow')
+		self.fig.draw(renderer=self.renderer)
+		self.blit(self.fig.bbox)
+		
 		
 class MyContourWidget(QtWidgets.QDialog):
 	
@@ -82,47 +117,47 @@ class MyContourWidget(QtWidgets.QDialog):
 		self.layout = QtWidgets.QVBoxLayout(self)
 		self.mpl = MyContourCanvas(self)
 		self.layout.addWidget(self.mpl)
-		
+		self.toolbar = NavigationToolbar(self.mpl, self)
+		self.layout.addWidget(self.toolbar)
+
+		self.contour_number = QtWidgets.QSlider(self)
+		self.contour_number.setOrientation(QtCore.Qt.Horizontal)
+		self.contour_number.setObjectName('contour_number')
+		self.layout.addWidget(self.contour_number)
+
 		self.horizontalLayout = QtWidgets.QHBoxLayout(self)
-		self.save_button = QtWidgets.QPushButton(self)
-		self.save_button.setObjectName("save")
-		self.horizontalLayout.addWidget(self.save_button)
-		self.enlarge_button = QtWidgets.QPushButton(self)
-		self.enlarge_button.setObjectName("enlarge")
-		self.horizontalLayout.addWidget(self.enlarge_button)
-		self.return_button = QtWidgets.QPushButton(self)
-		self.return_button.setObjectName("pull")
-		self.horizontalLayout.addWidget(self.return_button)
+
+		self.show_contour = QtWidgets.QPushButton(self)
+		self.show_contour.setObjectName("contour")
+		self.horizontalLayout.addWidget(self.show_contour)
+
+		self.show_contourf = QtWidgets.QPushButton(self)
+		self.show_contourf.setObjectName("enlarge")
+		self.horizontalLayout.addWidget(self.show_contourf)
+
+		self.show_all = QtWidgets.QPushButton(self)
+		self.show_all.setObjectName("pull")
+		self.horizontalLayout.addWidget(self.show_all)
 		self.layout.addLayout(self.horizontalLayout)
+
 	
 	def connectEmit(self):
-		self.save_button.clicked.connect(self.save_figure)
+		
+		self.show_contour.clicked.connect(self.mpl.show_contour)
+		self.show_contourf.clicked.connect(self.mpl.show_contourf)
+		self.show_all.clicked.connect(self.mpl.show_all)
 		
 	def retranslateUi(self):
+		
 		__translation = QtCore.QCoreApplication.translate
 		self.setWindowTitle(__translation(' ', '图像'))
-		self.save_button.setText(__translation(' ', '保存'))
-		self.enlarge_button.setText(__translation(' ', '放大'))
-		self.return_button.setText(__translation(' ', '还原'))
-	
-	def save_figure(self):
-		
-		self.save_widget = QtWidgets.QFileDialog()
-		self.save_widget.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
-		self.save_widget.setWindowTitle('请选择保存路径')
-		self.save_widget.setNameFilter('image files(*.png)')
-		
-		if self.save_widget.exec():
-			self.save_name = self.save_widget.selectedFiles()[0]
-			self.save_url = self.save_widget.selectedUrls()
-			print(self.save_url, self.save_name)
-			self.mpl.fig.savefig(self.save_name)
-		else:
-			return
+		self.show_contour.setText(__translation(' ', '等温线'))
+		self.show_contourf.setText(__translation(' ', '等温云图'))
+		self.show_all.setText(__translation(' ', '全部'))
 		
 if __name__ == '__main__':
 	
-	app = QApplication(sys.argv)
+	app = QtWidgets.QApplication(sys.argv)
 	image = mpimg.imread('mask.png')
 	ui = MyContourWidget(picture=image)
 	ui.show()

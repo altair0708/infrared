@@ -13,6 +13,7 @@ class MyMainWindow(Ui_MainWindow):
 app = QApplication(sys.argv)
 
 mainWindow = MyMainWindow()
+
 '''
 newthread = QtCore.QThread()
 
@@ -32,6 +33,7 @@ mainWindow.exitWindow.clicked.connect(newthread.quit)
 
 newthread.start()
 '''
+
 mainWindow.show()
 
 sys.exit(app.exec())

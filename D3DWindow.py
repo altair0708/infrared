@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.use("Qt5Agg")  # 声明使用QT5
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -62,6 +63,7 @@ class MyD3DCanvas(FigureCanvas):
 			                               10, colors='black', linewidths=1)
 			self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
 			self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour], 10, cmap='rainbow')
+			
 		
 		elif flag == 'original':
 			print(1)
@@ -83,6 +85,9 @@ class MyD3DWidget(QtWidgets.QDialog):
 		self.mpl = MyD3DCanvas(self)
 		self.layout.addWidget(self.mpl)
 		
+		self.toolbar = NavigationToolbar(self.mpl, self)
+		self.layout.addWidget(self.toolbar)
+		
 		self.horizontalLayout = QtWidgets.QHBoxLayout(self)
 		self.save_button = QtWidgets.QPushButton(self)
 		self.save_button.setObjectName("save")
@@ -96,16 +101,20 @@ class MyD3DWidget(QtWidgets.QDialog):
 		self.layout.addLayout(self.horizontalLayout)
 	
 	def connectEmit(self):
-		self.save_button.clicked.connect(self.save_figure)
+		# self.save_button.clicked.connect(self.save_figure)
+		pass
 		
 	def retranslateUi(self):
 		
 		__translation = QtCore.QCoreApplication.translate
 		self.setWindowTitle(__translation(' ', '图像'))
+		'''
 		self.save_button.setText(__translation(' ', '保存'))
 		self.enlarge_button.setText(__translation(' ', '放大'))
 		self.return_button.setText(__translation(' ', '还原'))
-	
+		'''
+		
+		'''
 	def save_figure(self):
 		
 		self.save_widget = QtWidgets.QFileDialog()
@@ -120,11 +129,12 @@ class MyD3DWidget(QtWidgets.QDialog):
 			self.mpl.fig.savefig(self.save_name)
 		else:
 			return
-		
+		'''
 if __name__ == '__main__':
 	
-	app = QApplication(sys.argv)
+	app = QtWidgets.QApplication(sys.argv)
 	image = mpimg.imread('mask.png')
 	ui = MyD3DWidget(picture=image)
 	ui.show()
 	sys.exit(app.exec())
+	

@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.use("Qt5Agg")  # 声明使用QT5
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -32,7 +33,7 @@ class MyCanvas(FigureCanvas):
 		if flag == 'gray':
 			
 			self.fig.suptitle('灰度图像')
-			self.fig.figimage(picture, resize=True)
+			self.fig.figimage(picture, resize=True, cmap='gray')
 			
 		elif flag == 'D3D':
 			
@@ -82,6 +83,9 @@ class MyWidget(QtWidgets.QDialog):
 		self.mpl = MyCanvas(self)
 		self.layout.addWidget(self.mpl)
 		
+		self.toolbar = NavigationToolbar(self.mpl, self)
+		self.layout.addWidget(self.toolbar)
+		
 		self.horizontalLayout = QtWidgets.QHBoxLayout(self)
 		self.save_button = QtWidgets.QPushButton(self)
 		self.save_button.setObjectName("save")
@@ -95,7 +99,8 @@ class MyWidget(QtWidgets.QDialog):
 		self.layout.addLayout(self.horizontalLayout)
 	
 	def connectEmit(self):
-		self.save_button.clicked.connect(self.save_figure)
+		# self.save_button.clicked.connect(self.save_figure)
+		pass
 		
 	def retranslateUi(self):
 		__translation = QtCore.QCoreApplication.translate
@@ -121,8 +126,9 @@ class MyWidget(QtWidgets.QDialog):
 		
 if __name__ == '__main__':
 	
-	app = QApplication(sys.argv)
+	app = QtWidgets.QApplication(sys.argv)
 	image = mpimg.imread('mask.png')
 	ui = MyWidget(picture=image)
 	ui.show()
 	sys.exit(app.exec())
+	

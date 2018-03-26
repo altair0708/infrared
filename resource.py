@@ -177,6 +177,7 @@ class Ui_MainWindow(QMainWindow):
 		self.verticalLayout_2.addItem(spacerItem4)
 		
 		# TODO:添加按钮
+		'''
 		self.show1 = QtWidgets.QPushButton(self.layoutWidget)
 		self.show1.setObjectName("show3D")
 		self.show1.setDisabled(True)
@@ -226,10 +227,8 @@ class Ui_MainWindow(QMainWindow):
 		self.show10.setObjectName("show3D")
 		self.show10.setDisabled(True)
 		self.verticalLayout_2.addWidget(self.show10)
-		
-		
-		
-		
+		'''
+		'''
 		self.verticalLayout = QtWidgets.QVBoxLayout()
 		self.verticalLayout.setObjectName("verticalLayout")
 		
@@ -255,7 +254,7 @@ class Ui_MainWindow(QMainWindow):
 		self.verticalLayout.addWidget(self.checkBox_5)
 		
 		self.verticalLayout_2.addLayout(self.verticalLayout)
-		
+		'''
 		spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
 		self.verticalLayout_2.addItem(spacerItem5)
 		
@@ -331,6 +330,7 @@ class Ui_MainWindow(QMainWindow):
 		self.maxLabel.setText(_translate("MainWindow", "最高温度"))
 		self.showGray.setText(_translate("MainWindow", "灰度"))
 		self.show3D.setText(_translate("MainWindow", "3D"))
+		'''
 		self.show1.setText(_translate("MainWindow", "1"))
 		self.show2.setText(_translate("MainWindow", "2"))
 		self.show3.setText(_translate("MainWindow", "3"))
@@ -341,14 +341,17 @@ class Ui_MainWindow(QMainWindow):
 		self.show8.setText(_translate("MainWindow", "8"))
 		self.show9.setText(_translate("MainWindow", "9"))
 		self.show10.setText(_translate("MainWindow", "10"))
+		'''
 		self.showContour.setText(_translate("MainWindow", "云图"))
+		'''
 		self.checkBox.setText(_translate("MainWindow", "初始化"))
 		self.checkBox_4.setText(_translate("MainWindow", "最低温度"))
 		self.checkBox_3.setText(_translate("MainWindow", "最高温度"))
 		self.checkBox_2.setText(_translate("MainWindow", "截图"))
 		self.checkBox_5.setText(_translate("MainWindow", "输出图像"))
+		'''
 		self.exitWindow.setText(_translate("MainWindow", "退出"))
-	
+		
 	def play_video(self):
 		
 		if not self.begin:
@@ -611,7 +614,7 @@ class CalculateThread(QtCore.QObject):
 		self.temperaturedict = dict(zip(self.temperature, self.color))
 		print(self.temperaturedict)
 		
-		self.gray = cv2.GaussianBlur(self.gray, (0, 0), 5)
+		self.gray = cv2.GaussianBlur(self.gray, (0, 0), 7)
 		if self.temperaturedict[self.high] - self.temperaturedict[self.low]:
 			self.k = (self.high - self.low) / (self.temperaturedict[self.high] - self.temperaturedict[self.low])
 		
@@ -692,4 +695,3 @@ class CalculateThread(QtCore.QObject):
 		# plt.show()
 		# plt.close()
 		# plt.clf()
-
