@@ -29,6 +29,7 @@ class MyContourCanvas(FigureCanvas):
 		
 		self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 		self.updateGeometry()
+		self.slider_number = 10
 		
 	def start_static_plot(self, picture, flag='gray'):
 		
@@ -64,9 +65,10 @@ class MyContourCanvas(FigureCanvas):
 			self.xcontour, self.ycontour = np.meshgrid(self.xcontour, self.ycontour)
 			self.contour = cv2.flip(self.contour, 0)
 			self.contourline = self.axes.contour(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour],
-			                               10, colors='black', linewidths=1)
+			                                     self.slider_number, colors='black', linewidths=1)
 			self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
-			self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour], 10, cmap='rainbow')
+			self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour],
+			                   self.slider_number, cmap='rainbow')
 			
 		elif flag == 'original':
 			
@@ -78,7 +80,7 @@ class MyContourCanvas(FigureCanvas):
 		self.fig.clear()
 		self.axes = self.fig.add_subplot(1, 1, 1)
 		self.contourline = self.axes.contour(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour],
-		                                     10, cmap='rainbow', linewidths=2)
+		                                     self.slider_number, cmap='rainbow', linewidths=2)
 		self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
 		self.fig.draw(renderer=self.renderer)
 		self.blit(self.fig.bbox)
@@ -87,7 +89,8 @@ class MyContourCanvas(FigureCanvas):
 		
 		self.fig.clear()
 		self.axes = self.fig.add_subplot(1, 1, 1)
-		self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour], 10, cmap='rainbow')
+		self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour],
+		                   self.slider_number, cmap='rainbow')
 		self.fig.draw(renderer=self.renderer)
 		self.blit(self.fig.bbox)
 		
@@ -96,12 +99,12 @@ class MyContourCanvas(FigureCanvas):
 		self.fig.clear()
 		self.axes = self.fig.add_subplot(1, 1, 1)
 		self.contourline = self.axes.contour(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour],
-		                                     10, colors='black', linewidths=1)
+		                                     self.slider_number, colors='black', linewidths=1)
 		self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
-		self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour], 10, cmap='rainbow')
+		self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour],
+		                   self.slider_number, cmap='rainbow')
 		self.fig.draw(renderer=self.renderer)
 		self.blit(self.fig.bbox)
-		
 		
 class MyContourWidget(QtWidgets.QDialog):
 	
@@ -118,11 +121,19 @@ class MyContourWidget(QtWidgets.QDialog):
 		self.mpl = MyContourCanvas(self)
 		self.layout.addWidget(self.mpl)
 		self.toolbar = NavigationToolbar(self.mpl, self)
+		self.mpl.resize(QtCore.QSize(720, 576))
+		self.mpl.setMinimumSize(QtCore.QSize(720, 576))
+		self.mpl.setMaximumSize(QtCore.QSize(720, 576))
 		self.layout.addWidget(self.toolbar)
 
 		self.contour_number = QtWidgets.QSlider(self)
 		self.contour_number.setOrientation(QtCore.Qt.Horizontal)
 		self.contour_number.setObjectName('contour_number')
+		self.contour_number.setRange(6, 14)
+		self.contour_number.setValue(10)
+		self.contour_number.setTickInterval(2)
+		self.contour_number.setSingleStep(2)
+		self.contour_number.setTickPosition(QtWidgets.QSlider.TicksBelow)
 		self.layout.addWidget(self.contour_number)
 
 		self.horizontalLayout = QtWidgets.QHBoxLayout(self)
@@ -146,14 +157,21 @@ class MyContourWidget(QtWidgets.QDialog):
 		self.show_contour.clicked.connect(self.mpl.show_contour)
 		self.show_contourf.clicked.connect(self.mpl.show_contourf)
 		self.show_all.clicked.connect(self.mpl.show_all)
+		self.contour_number.sliderReleased.connect(self.change_contour_number)
 		
 	def retranslateUi(self):
 		
 		__translation = QtCore.QCoreApplication.translate
-		self.setWindowTitle(__translation(' ', '图像'))
+		self.setWindowTitle(__translation(' ', '等温线图像'))
 		self.show_contour.setText(__translation(' ', '等温线'))
 		self.show_contourf.setText(__translation(' ', '等温云图'))
 		self.show_all.setText(__translation(' ', '全部'))
+		
+	def change_contour_number(self):
+		
+		self.mpl.fig.clear()
+		self.mpl.slider_number = self.contour_number.value()
+		self.mpl.show_all()
 		
 if __name__ == '__main__':
 	

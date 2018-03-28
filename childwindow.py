@@ -22,11 +22,11 @@ class MyCanvas(FigureCanvas):
 		
 		#self.axes = self.fig.add_subplot(111)
 		
-		FigureCanvas.__init__(self, self.fig)
+		super().__init__(self.fig)
 		self.setParent(parent)
 		
-		FigureCanvas.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-		FigureCanvas.updateGeometry(self)
+		self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+		self.updateGeometry()
 		
 	def start_static_plot(self, picture, flag='gray'):
 		
@@ -86,6 +86,7 @@ class MyWidget(QtWidgets.QDialog):
 		self.toolbar = NavigationToolbar(self.mpl, self)
 		self.layout.addWidget(self.toolbar)
 		
+		'''
 		self.horizontalLayout = QtWidgets.QHBoxLayout(self)
 		self.save_button = QtWidgets.QPushButton(self)
 		self.save_button.setObjectName("save")
@@ -97,7 +98,8 @@ class MyWidget(QtWidgets.QDialog):
 		self.return_button.setObjectName("pull")
 		self.horizontalLayout.addWidget(self.return_button)
 		self.layout.addLayout(self.horizontalLayout)
-	
+		'''
+		
 	def connectEmit(self):
 		# self.save_button.clicked.connect(self.save_figure)
 		pass
@@ -105,10 +107,12 @@ class MyWidget(QtWidgets.QDialog):
 	def retranslateUi(self):
 		__translation = QtCore.QCoreApplication.translate
 		self.setWindowTitle(__translation(' ', '图像'))
+		'''
 		self.save_button.setText(__translation(' ', '保存'))
 		self.enlarge_button.setText(__translation(' ', '放大'))
 		self.return_button.setText(__translation(' ', '还原'))
-		
+		'''
+		'''
 	def save_figure(self):
 		
 		self.save_widget = QtWidgets.QFileDialog()
@@ -123,7 +127,7 @@ class MyWidget(QtWidgets.QDialog):
 			self.mpl.fig.savefig(self.save_name)
 		else:
 			return
-		
+		'''
 if __name__ == '__main__':
 	
 	app = QtWidgets.QApplication(sys.argv)

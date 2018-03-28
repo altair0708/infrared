@@ -20,13 +20,11 @@ class MyD3DCanvas(FigureCanvas):
 		
 		self.fig = Figure(figsize=(width, height), dpi=dpi)
 		
-		#self.axes = self.fig.add_subplot(111)
-		
-		FigureCanvas.__init__(self, self.fig)
+		super().__init__(self.fig)
 		self.setParent(parent)
 		
-		FigureCanvas.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-		FigureCanvas.updateGeometry(self)
+		self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+		self.updateGeometry()
 		
 	def start_static_plot(self, picture, flag='gray'):
 		
@@ -40,6 +38,10 @@ class MyD3DCanvas(FigureCanvas):
 			self.fig.suptitle('3D图像')
 			self.axes = self.fig.add_subplot(1, 1, 1, projection='3d')
 			self.D3D = picture.copy()
+			self.axes.set_xticks(np.arange(0, 80, 13))
+			self.axes.set_xticklabels(np.arange(0, 601, 100))
+			self.axes.set_yticks(np.arange(0, 61, 12))
+			self.axes.set_yticklabels(np.arange(0, 501, 100))
 			self.pictureheight3D, self.picturewidth3D = self.D3D.shape[:2]
 			self.x3D = np.arange(0, self.picturewidth3D, 1)
 			self.y3D = np.arange(0, self.pictureheight3D, 1)
@@ -66,7 +68,7 @@ class MyD3DCanvas(FigureCanvas):
 			
 		
 		elif flag == 'original':
-			print(1)
+			
 			self.fig.suptitle('原始图像')
 			self.fig.figimage(picture, resize=True)
 		
@@ -83,11 +85,16 @@ class MyD3DWidget(QtWidgets.QDialog):
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 		self.mpl = MyD3DCanvas(self)
+		self.mpl.resize(QtCore.QSize(720, 576))
+		self.mpl.setMinimumSize(QtCore.QSize(720, 576))
+		self.mpl.setMaximumSize(QtCore.QSize(720, 576))
+		
 		self.layout.addWidget(self.mpl)
 		
 		self.toolbar = NavigationToolbar(self.mpl, self)
 		self.layout.addWidget(self.toolbar)
 		
+		'''
 		self.horizontalLayout = QtWidgets.QHBoxLayout(self)
 		self.save_button = QtWidgets.QPushButton(self)
 		self.save_button.setObjectName("save")
@@ -99,7 +106,8 @@ class MyD3DWidget(QtWidgets.QDialog):
 		self.return_button.setObjectName("pull")
 		self.horizontalLayout.addWidget(self.return_button)
 		self.layout.addLayout(self.horizontalLayout)
-	
+		'''
+		
 	def connectEmit(self):
 		# self.save_button.clicked.connect(self.save_figure)
 		pass
@@ -107,7 +115,8 @@ class MyD3DWidget(QtWidgets.QDialog):
 	def retranslateUi(self):
 		
 		__translation = QtCore.QCoreApplication.translate
-		self.setWindowTitle(__translation(' ', '图像'))
+		self.setWindowTitle(__translation(' ', '3D图像'))
+		
 		'''
 		self.save_button.setText(__translation(' ', '保存'))
 		self.enlarge_button.setText(__translation(' ', '放大'))

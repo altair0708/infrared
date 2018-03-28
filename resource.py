@@ -73,6 +73,10 @@ class Ui_MainWindow(QMainWindow):
 		self.videoPlayer.setMaximumSize(QtCore.QSize(720, 576))
 		self.videoPlayer.setAutoFillBackground(True)
 		self.videoPlayer.setObjectName("videoPlayer")
+		self.Blankimage = np.ones((576, 720, 3), np.uint8) * 255
+		self.Blankimage = QtGui.QImage(self.Blankimage.data, self.Blankimage.shape[1], self.Blankimage.shape[0],
+		                            QtGui.QImage.Format_RGB888)
+		self.videoPlayer.setPixmap(QtGui.QPixmap.fromImage(self.Blankimage))
 		self.verticalLayout_3.addWidget(self.videoPlayer)
 		
 		self.horizontalSlider = QtWidgets.QSlider(self.layoutWidget)
@@ -396,12 +400,14 @@ class Ui_MainWindow(QMainWindow):
 	def stop_video(self):
 		
 		self.playthread.stop_video()
+		self.begin = False
 	
 	def show_video(self, Qqimage):
 		
 		self.videoPlayer.setPixmap(QtGui.QPixmap.fromImage(Qqimage))
 	
 	def information_process(self, VideoFrameNumber):
+		
 		self.horizontalSlider.setMaximum(VideoFrameNumber)
 		self.horizontalSlider.setMinimum(0)
 		
@@ -437,24 +443,32 @@ class Ui_MainWindow(QMainWindow):
 	
 	def show_gray(self, gray):
 		
+		self.playthread.MyTimer.stop()
+		self.play = False
 		self.Mygray = MyWidget()
 		self.Mygray.mpl.start_static_plot(gray, flag='gray')
 		self.Mygray.exec()
 	
 	def show_D3D(self, D3D):
 		
+		self.playthread.MyTimer.stop()
+		self.play = False
 		self.MyD3D = MyD3DWidget()
 		self.MyD3D.mpl.start_static_plot(D3D, flag='D3D')
 		self.MyD3D.exec()
 	
 	def show_contour(self, contour):
 		
+		self.playthread.MyTimer.stop()
+		self.play = False
 		self.Mycontour = MyContourWidget()
 		self.Mycontour.mpl.start_static_plot(contour, flag='contour')
 		self.Mycontour.exec()
 	
 	def show_original(self, original):
 		
+		self.playthread.MyTimer.stop()
+		self.play = False
 		self.Myoriginal = MyWidget()
 		self.Myoriginal.mpl.start_static_plot(original, flag='original')
 		self.Myoriginal.exec()
@@ -569,8 +583,8 @@ class CalculateThread(QtCore.QObject):
 	contourpictureSignal = QtCore.pyqtSignal(object)
 	originalpictureSignal = QtCore.pyqtSignal(object)
 	
-	
 	def __init__(self, parent = None):
+		
 		super().__init__(parent)
 		self.image = np.ones((576, 720, 3), np.uint8) *255
 		self.gray = np.ones((576, 720, 3), np.uint8) *255
@@ -598,8 +612,8 @@ class CalculateThread(QtCore.QObject):
 		self.D3D = None
 		self.contour = None
 		
-	
 	def get_picture(self, picture):
+		
 		self.image = picture.copy()
 		
 		self.rot = self.image[184:432, 652:668].copy()
@@ -614,7 +628,7 @@ class CalculateThread(QtCore.QObject):
 		self.temperaturedict = dict(zip(self.temperature, self.color))
 		print(self.temperaturedict)
 		
-		self.gray = cv2.GaussianBlur(self.gray, (0, 0), 7)
+		self.gray = cv2.GaussianBlur(self.gray, (0, 0), 15)
 		if self.temperaturedict[self.high] - self.temperaturedict[self.low]:
 			self.k = (self.high - self.low) / (self.temperaturedict[self.high] - self.temperaturedict[self.low])
 		
@@ -630,6 +644,7 @@ class CalculateThread(QtCore.QObject):
 		# plt.clf()
 	
 	def receive_temperature(self, high, low):
+		
 		self.high = high
 		self.low = low
 		print(self.high, self.low)
@@ -639,6 +654,7 @@ class CalculateThread(QtCore.QObject):
 		self.graypictureSignal.emit(self.gray)
 		
 	def draw_3D(self):
+		
 		if self.renovation3D:
 			self.D3D = self.gray.copy()
 			for i in range(3):
@@ -666,7 +682,7 @@ class CalculateThread(QtCore.QObject):
 		# plt.clf()
 	
 	def draw_contour(self):
-		plt.close()
+		
 		if self.renovationcontour:
 			
 			self.contour = self.gray.copy()
