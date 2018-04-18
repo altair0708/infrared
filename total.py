@@ -1,30 +1,359 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'untitled.ui'
-#
-# Created by: PyQt5 UI code generator 5.10.1
-#
-# WARNING! All changes made in this file will be lost!
-from childwindow import *
-from contourWindow import *
-from D3DWindow import *
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication,  QMainWindow, QMessageBox
-from matplotlib import pyplot as plt
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+import matplotlib
+matplotlib.use("Qt5Agg")
 from mpl_toolkits.mplot3d import Axes3D
-import cv2
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+from matplotlib import pyplot as plt
 import numpy as np
-import time
 import sys
+import cv2
+
+class MyCanvas(FigureCanvas):
+	
+	def __init__(self, parent=None, width=5, height=4, dpi=100):
+		
+		plt.rcParams['font.family'] = ['SimHei']
+		plt.rcParams['axes.unicode_minus'] = False
+		
+		self.fig = Figure(figsize=(width, height), dpi=dpi)
+		
+		super().__init__(self.fig)
+		self.setParent(parent)
+		
+		self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+		self.updateGeometry()
+	
+	def start_static_plot(self, picture, flag='gray'):
+		
+		if flag == 'gray':
+			
+			self.fig.suptitle('灰度图像')
+			self.fig.figimage(picture, resize=True, cmap='gray')
+		
+		elif flag == 'D3D':
+			
+			self.fig.suptitle('3D图像')
+			self.axes = self.fig.add_subplot(1, 1, 1, projection='3d')
+			self.D3D = picture.copy()
+			self.pictureheight3D, self.picturewidth3D = self.D3D.shape[:2]
+			self.x3D = np.arange(0, self.picturewidth3D, 1)
+			self.y3D = np.arange(0, self.pictureheight3D, 1)
+			self.x3D, self.y3D = np.meshgrid(self.x3D, self.y3D)
+			self.D3D = cv2.flip(self.D3D, 0)
+			self.axes.plot_surface(self.x3D, self.y3D, self.D3D[self.y3D, self.x3D], rstride=2, cstride=2,
+			                       cmap='rainbow')
+		
+		elif flag == 'contour':
+			
+			self.fig.suptitle('等温线图像')
+			self.axes = self.fig.add_subplot(1, 1, 1)
+			self.contour = picture.copy()
+			self.pictureheight, self.picturewidth = self.contour.shape[:2]
+			self.xcontour = np.arange(0, self.picturewidth, 1)
+			self.ycontour = np.arange(0, self.pictureheight, 1)
+			self.xcontour, self.ycontour = np.meshgrid(self.xcontour, self.ycontour)
+			self.contour = cv2.flip(self.contour, 0)
+			self.contourline = self.axes.contour(self.xcontour, self.ycontour,
+			                                     self.contour[self.ycontour, self.xcontour], 10, colors='black',
+			                                     linewidths=1)
+			self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
+			self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour], 10,
+			                   cmap='rainbow')
+		
+		elif flag == 'original':
+			
+			self.fig.suptitle('原始图像')
+			self.fig.figimage(picture, resize=True)
+
+
+class MyWidget(QtWidgets.QDialog):
+	
+	def __init__(self, parent=None, picture=None):
+		
+		super().__init__(parent)
+		self.picture = picture
+		self.initUi()
+		self.retranslateUi()
+		self.setWindowIcon(QtGui.QIcon('红外视频动态识别.ico'))
+	
+	def initUi(self):
+		
+		self.layout = QtWidgets.QVBoxLayout(self)
+		self.mpl = MyCanvas(self)
+		self.layout.addWidget(self.mpl)
+		
+		self.toolbar = NavigationToolbar(self.mpl, self)
+		self.layout.addWidget(self.toolbar)
+	
+	def retranslateUi(self):
+		__translation = QtCore.QCoreApplication.translate
+		self.setWindowTitle(__translation(' ', '图像'))
+		
+
+class MyD3DCanvas(FigureCanvas):
+	
+	def __init__(self, parent=None, width=5, height=4, dpi=100):
+		
+		plt.rcParams['font.family'] = ['SimHei']
+		plt.rcParams['axes.unicode_minus'] = False
+		
+		self.fig = Figure(figsize=(width, height), dpi=dpi)
+		
+		super().__init__(self.fig)
+		self.setParent(parent)
+		
+		self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+		self.updateGeometry()
+	
+	def start_static_plot(self, picture, flag='gray'):
+		
+		if flag == 'gray':
+			
+			self.fig.suptitle('灰度图像')
+			self.fig.figimage(picture, resize=True)
+		
+		elif flag == 'D3D':
+			
+			self.fig.suptitle('3D图像')
+			self.axes = self.fig.add_subplot(1, 1, 1, projection='3d')
+			self.D3D = picture.copy()
+			self.axes.set_xticks(np.arange(0, 80, 13))
+			self.axes.set_xticklabels(np.arange(0, 601, 100))
+			self.axes.set_yticks(np.arange(0, 61, 12))
+			self.axes.set_yticklabels(np.arange(0, 501, 100))
+			self.pictureheight3D, self.picturewidth3D = self.D3D.shape[:2]
+			self.x3D = np.arange(0, self.picturewidth3D, 1)
+			self.y3D = np.arange(0, self.pictureheight3D, 1)
+			self.x3D, self.y3D = np.meshgrid(self.x3D, self.y3D)
+			self.D3D = cv2.flip(self.D3D, 0)
+			self.axes.plot_surface(self.x3D, self.y3D, self.D3D[self.y3D, self.x3D], rstride=2, cstride=2,
+			                       cmap='rainbow')
+		
+		elif flag == 'contour':
+			
+			self.fig.suptitle('等温线图像')
+			self.axes = self.fig.add_subplot(1, 1, 1)
+			self.contour = picture.copy()
+			self.pictureheight, self.picturewidth = self.contour.shape[:2]
+			self.xcontour = np.arange(0, self.picturewidth, 1)
+			self.ycontour = np.arange(0, self.pictureheight, 1)
+			self.xcontour, self.ycontour = np.meshgrid(self.xcontour, self.ycontour)
+			self.contour = cv2.flip(self.contour, 0)
+			self.contourline = self.axes.contour(self.xcontour, self.ycontour,
+			                                     self.contour[self.ycontour, self.xcontour], 10, colors='black',
+			                                     linewidths=1)
+			self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
+			self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour], 10,
+			                   cmap='rainbow')
+		
+		
+		elif flag == 'original':
+			
+			self.fig.suptitle('原始图像')
+			self.fig.figimage(picture, resize=True)
+
+
+class MyD3DWidget(QtWidgets.QDialog):
+	
+	def __init__(self, parent=None, picture=None):
+		
+		super().__init__(parent)
+		self.picture = picture
+		self.initUi()
+		self.retranslateUi()
+		self.setWindowIcon(QtGui.QIcon('红外视频动态识别.ico'))
+	
+	def initUi(self):
+		
+		self.layout = QtWidgets.QVBoxLayout(self)
+		self.mpl = MyD3DCanvas(self)
+		self.mpl.resize(QtCore.QSize(720, 576))
+		self.mpl.setMinimumSize(QtCore.QSize(720, 576))
+		self.mpl.setMaximumSize(QtCore.QSize(720, 576))
+		
+		self.layout.addWidget(self.mpl)
+		self.toolbar = NavigationToolbar(self.mpl, self)
+		self.layout.addWidget(self.toolbar)
+	
+	def retranslateUi(self):
+		
+		__translation = QtCore.QCoreApplication.translate
+		self.setWindowTitle(__translation(' ', '3D图像'))
+
+
+class MyContourCanvas(FigureCanvas):
+	
+	def __init__(self, parent=None, width=5, height=4, dpi=100):
+		
+		plt.rcParams['font.family'] = ['SimHei']
+		plt.rcParams['axes.unicode_minus'] = False
+		
+		self.fig = plt.figure(figsize=(width, height), dpi=dpi)
+		
+		super().__init__(self.fig)
+		self.setParent(parent)
+		
+		self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+		self.updateGeometry()
+		self.slider_number = 10
+	
+	def start_static_plot(self, picture, flag='gray'):
+		
+		if flag == 'gray':
+			
+			self.fig.suptitle('灰度图像')
+			self.fig.figimage(picture, resize=True)
+		
+		elif flag == 'D3D':
+			
+			self.fig.suptitle('3D图像')
+			self.axes = self.fig.add_subplot(1, 1, 1, projection='3d')
+			self.D3D = picture.copy()
+			self.pictureheight3D, self.picturewidth3D = self.D3D.shape[:2]
+			self.x3D = np.arange(0, self.picturewidth3D, 1)
+			self.y3D = np.arange(0, self.pictureheight3D, 1)
+			self.x3D, self.y3D = np.meshgrid(self.x3D, self.y3D)
+			self.D3D = cv2.flip(self.D3D, 0)
+			self.axes.plot_surface(self.x3D, self.y3D, self.D3D[self.y3D, self.x3D], rstride=2, cstride=2,
+			                       cmap='rainbow')
+		
+		elif flag == 'contour':
+			
+			self.fig.suptitle('等温线图像')
+			self.axes = self.fig.add_subplot(1, 1, 1)
+			self.axes.axis('equal')
+			self.contour = picture.copy()
+			self.pictureheight, self.picturewidth = self.contour.shape[:2]
+			self.xcontour = np.arange(0, self.picturewidth, 1)
+			self.ycontour = np.arange(0, self.pictureheight, 1)
+			self.xcontour, self.ycontour = np.meshgrid(self.xcontour, self.ycontour)
+			self.contour = cv2.flip(self.contour, 0)
+			self.contourline = self.axes.contour(self.xcontour, self.ycontour,
+			                                     self.contour[self.ycontour, self.xcontour], self.slider_number,
+			                                     colors='black', linewidths=1)
+			self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
+			self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour],
+			                   self.slider_number, cmap='rainbow')
+		
+		elif flag == 'original':
+			
+			self.fig.suptitle('原始图像')
+			self.fig.figimage(picture, resize=True)
+	
+	def show_contour(self):
+		
+		self.fig.clear()
+		self.axes = self.fig.add_subplot(1, 1, 1)
+		self.contourline = self.axes.contour(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour],
+		                                     self.slider_number, cmap='rainbow', linewidths=2)
+		self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
+		self.fig.draw(renderer=self.renderer)
+		self.blit(self.fig.bbox)
+	
+	def show_contourf(self):
+		
+		self.fig.clear()
+		self.axes = self.fig.add_subplot(1, 1, 1)
+		self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour], self.slider_number,
+		                   cmap='rainbow')
+		self.fig.draw(renderer=self.renderer)
+		self.blit(self.fig.bbox)
+	
+	def show_all(self):
+		
+		self.fig.clear()
+		self.axes = self.fig.add_subplot(1, 1, 1)
+		self.contourline = self.axes.contour(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour],
+		                                     self.slider_number, colors='black', linewidths=1)
+		self.axes.clabel(self.contourline, inline=True, inline_spacing=5, fontsize=10, fmt='%.1f')
+		self.axes.contourf(self.xcontour, self.ycontour, self.contour[self.ycontour, self.xcontour], self.slider_number,
+		                   cmap='rainbow')
+		self.fig.draw(renderer=self.renderer)
+		self.blit(self.fig.bbox)
+
+
+class MyContourWidget(QtWidgets.QDialog):
+	
+	def __init__(self, parent=None, picture=None):
+		
+		super().__init__(parent)
+		self.picture = picture
+		self.initUi()
+		self.connectEmit()
+		self.retranslateUi()
+		self.setWindowIcon(QtGui.QIcon('红外视频动态识别.ico'))
+	
+	def initUi(self):
+		
+		self.layout = QtWidgets.QVBoxLayout(self)
+		self.mpl = MyContourCanvas(self)
+		self.layout.addWidget(self.mpl)
+		self.toolbar = NavigationToolbar(self.mpl, self)
+		self.mpl.resize(QtCore.QSize(720, 576))
+		self.mpl.setMinimumSize(QtCore.QSize(720, 576))
+		self.mpl.setMaximumSize(QtCore.QSize(720, 576))
+		self.layout.addWidget(self.toolbar)
+		
+		self.contour_number = QtWidgets.QSlider(self)
+		self.contour_number.setOrientation(QtCore.Qt.Horizontal)
+		self.contour_number.setObjectName('contour_number')
+		self.contour_number.setRange(6, 14)
+		self.contour_number.setValue(10)
+		self.contour_number.setTickInterval(2)
+		self.contour_number.setSingleStep(2)
+		self.contour_number.setTickPosition(QtWidgets.QSlider.TicksBelow)
+		self.layout.addWidget(self.contour_number)
+		
+		self.horizontalLayout = QtWidgets.QHBoxLayout(self)
+		
+		self.show_contour = QtWidgets.QPushButton(self)
+		self.show_contour.setObjectName("contour")
+		self.horizontalLayout.addWidget(self.show_contour)
+		
+		self.show_contourf = QtWidgets.QPushButton(self)
+		self.show_contourf.setObjectName("enlarge")
+		self.horizontalLayout.addWidget(self.show_contourf)
+		
+		self.show_all = QtWidgets.QPushButton(self)
+		self.show_all.setObjectName("pull")
+		self.horizontalLayout.addWidget(self.show_all)
+		self.layout.addLayout(self.horizontalLayout)
+	
+	def connectEmit(self):
+		
+		self.show_contour.clicked.connect(self.mpl.show_contour)
+		self.show_contourf.clicked.connect(self.mpl.show_contourf)
+		self.show_all.clicked.connect(self.mpl.show_all)
+		self.contour_number.sliderReleased.connect(self.change_contour_number)
+	
+	def retranslateUi(self):
+		
+		__translation = QtCore.QCoreApplication.translate
+		self.setWindowTitle(__translation(' ', '等温线图像'))
+		self.show_contour.setText(__translation(' ', '等温线'))
+		self.show_contourf.setText(__translation(' ', '等温云图'))
+		self.show_all.setText(__translation(' ', '全部'))
+	
+	def change_contour_number(self):
+		
+		self.mpl.fig.clear()
+		self.mpl.slider_number = self.contour_number.value()
+		self.mpl.show_all()
+
 
 class Ui_MainWindow(QMainWindow):
-	
 	playnumberSignal = QtCore.pyqtSignal(object)
 	temperatureSignal = QtCore.pyqtSignal(float, float)
 	
 	def __init__(self):
-
+		
 		super().__init__()
+		self.setWindowIcon(QtGui.QIcon('红外视频动态识别.ico'))
 		
 		self.play = False
 		self.begin = False
@@ -38,7 +367,7 @@ class Ui_MainWindow(QMainWindow):
 		self.newthread1 = QtCore.QThread()
 		self.newthread2 = QtCore.QThread()
 		
-		self.playthread = PlayerThread()  # 播放线程
+		self.playthread = PlayerThread()
 		self.calculatethread = CalculateThread()
 		
 		self.playthread.moveToThread(self.newthread1)
@@ -46,7 +375,7 @@ class Ui_MainWindow(QMainWindow):
 		
 		self.newthread1.start()
 		self.newthread2.start()
-		
+	
 	def setupUi(self, MainWindow):
 		
 		MainWindow.setObjectName("MainWindow")
@@ -75,7 +404,7 @@ class Ui_MainWindow(QMainWindow):
 		self.videoPlayer.setObjectName("videoPlayer")
 		self.Blankimage = np.ones((576, 720, 3), np.uint8) * 255
 		self.Blankimage = QtGui.QImage(self.Blankimage.data, self.Blankimage.shape[1], self.Blankimage.shape[0],
-		                            QtGui.QImage.Format_RGB888)
+		                               QtGui.QImage.Format_RGB888)
 		self.videoPlayer.setPixmap(QtGui.QPixmap.fromImage(self.Blankimage))
 		self.verticalLayout_3.addWidget(self.videoPlayer)
 		
@@ -180,85 +509,6 @@ class Ui_MainWindow(QMainWindow):
 		spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
 		self.verticalLayout_2.addItem(spacerItem4)
 		
-		# TODO:添加按钮
-		'''
-		self.show1 = QtWidgets.QPushButton(self.layoutWidget)
-		self.show1.setObjectName("show3D")
-		self.show1.setDisabled(True)
-		self.verticalLayout_2.addWidget(self.show1)
-		
-		self.show2 = QtWidgets.QPushButton(self.layoutWidget)
-		self.show2.setObjectName("show3D")
-		self.show2.setDisabled(True)
-		self.verticalLayout_2.addWidget(self.show2)
-		
-		self.show3 = QtWidgets.QPushButton(self.layoutWidget)
-		self.show3.setObjectName("show3D")
-		self.show3.setDisabled(True)
-		self.verticalLayout_2.addWidget(self.show3)
-		
-		self.show4 = QtWidgets.QPushButton(self.layoutWidget)
-		self.show4.setObjectName("show3D")
-		self.show4.setDisabled(True)
-		self.verticalLayout_2.addWidget(self.show4)
-		
-		self.show5 = QtWidgets.QPushButton(self.layoutWidget)
-		self.show5.setObjectName("show3D")
-		self.show5.setDisabled(True)
-		self.verticalLayout_2.addWidget(self.show5)
-		
-		self.show6 = QtWidgets.QPushButton(self.layoutWidget)
-		self.show6.setObjectName("show3D")
-		self.show6.setDisabled(True)
-		self.verticalLayout_2.addWidget(self.show6)
-		
-		self.show7 = QtWidgets.QPushButton(self.layoutWidget)
-		self.show7.setObjectName("show3D")
-		self.show7.setDisabled(True)
-		self.verticalLayout_2.addWidget(self.show7)
-		
-		self.show8 = QtWidgets.QPushButton(self.layoutWidget)
-		self.show8.setObjectName("show3D")
-		self.show8.setDisabled(True)
-		self.verticalLayout_2.addWidget(self.show8)
-		
-		self.show9 = QtWidgets.QPushButton(self.layoutWidget)
-		self.show9.setObjectName("show3D")
-		self.show9.setDisabled(True)
-		self.verticalLayout_2.addWidget(self.show9)
-		
-		self.show10 = QtWidgets.QPushButton(self.layoutWidget)
-		self.show10.setObjectName("show3D")
-		self.show10.setDisabled(True)
-		self.verticalLayout_2.addWidget(self.show10)
-		'''
-		'''
-		self.verticalLayout = QtWidgets.QVBoxLayout()
-		self.verticalLayout.setObjectName("verticalLayout")
-		
-		self.checkBox = QtWidgets.QCheckBox(self.layoutWidget)
-		self.checkBox.setEnabled(False)
-		self.checkBox.setObjectName("checkBox")
-		self.verticalLayout.addWidget(self.checkBox)
-		self.checkBox_4 = QtWidgets.QCheckBox(self.layoutWidget)
-		self.checkBox_4.setEnabled(False)
-		self.checkBox_4.setObjectName("checkBox_4")
-		self.verticalLayout.addWidget(self.checkBox_4)
-		self.checkBox_3 = QtWidgets.QCheckBox(self.layoutWidget)
-		self.checkBox_3.setEnabled(False)
-		self.checkBox_3.setObjectName("checkBox_3")
-		self.verticalLayout.addWidget(self.checkBox_3)
-		self.checkBox_2 = QtWidgets.QCheckBox(self.layoutWidget)
-		self.checkBox_2.setEnabled(False)
-		self.checkBox_2.setObjectName("checkBox_2")
-		self.verticalLayout.addWidget(self.checkBox_2)
-		self.checkBox_5 = QtWidgets.QCheckBox(self.layoutWidget)
-		self.checkBox_5.setEnabled(False)
-		self.checkBox_5.setObjectName("checkBox_5")
-		self.verticalLayout.addWidget(self.checkBox_5)
-		
-		self.verticalLayout_2.addLayout(self.verticalLayout)
-		'''
 		spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
 		self.verticalLayout_2.addItem(spacerItem5)
 		
@@ -273,6 +523,7 @@ class Ui_MainWindow(QMainWindow):
 		self.retranslateUi(MainWindow)
 		
 		'''信号与槽函数链接'''
+		
 		'''退出'''
 		self.exitWindow.clicked.connect(self.close)
 		
@@ -297,7 +548,7 @@ class Ui_MainWindow(QMainWindow):
 		self.screenShot.clicked.connect(self.playthread.screen_shot)
 		self.calculatethread.originalpictureSignal.connect(self.show_original)
 		self.screenShot.clicked.connect(self.set_enabled)
-
+		
 		'''温度条'''
 		self.minTemperature.valueChanged.connect(self.set_temperature)
 		self.maxTemperature.valueChanged.connect(self.set_temperature)
@@ -318,11 +569,9 @@ class Ui_MainWindow(QMainWindow):
 		self.showContour.clicked.connect(self.calculatethread.draw_contour)
 		self.calculatethread.contourpictureSignal.connect(self.show_contour)
 		
-		#self.exitWindow.clicked.connect(self.newthread.wait)
-		#self.exitWindow.clicked.connect(self.newthread.quit)
 		
 		QtCore.QMetaObject.connectSlotsByName(MainWindow)
-		
+	
 	def retranslateUi(self, MainWindow):
 		
 		_translate = QtCore.QCoreApplication.translate
@@ -334,28 +583,9 @@ class Ui_MainWindow(QMainWindow):
 		self.maxLabel.setText(_translate("MainWindow", "最高温度"))
 		self.showGray.setText(_translate("MainWindow", "灰度"))
 		self.show3D.setText(_translate("MainWindow", "3D"))
-		'''
-		self.show1.setText(_translate("MainWindow", "1"))
-		self.show2.setText(_translate("MainWindow", "2"))
-		self.show3.setText(_translate("MainWindow", "3"))
-		self.show4.setText(_translate("MainWindow", "4"))
-		self.show5.setText(_translate("MainWindow", "5"))
-		self.show6.setText(_translate("MainWindow", "6"))
-		self.show7.setText(_translate("MainWindow", "7"))
-		self.show8.setText(_translate("MainWindow", "8"))
-		self.show9.setText(_translate("MainWindow", "9"))
-		self.show10.setText(_translate("MainWindow", "10"))
-		'''
 		self.showContour.setText(_translate("MainWindow", "云图"))
-		'''
-		self.checkBox.setText(_translate("MainWindow", "初始化"))
-		self.checkBox_4.setText(_translate("MainWindow", "最低温度"))
-		self.checkBox_3.setText(_translate("MainWindow", "最高温度"))
-		self.checkBox_2.setText(_translate("MainWindow", "截图"))
-		self.checkBox_5.setText(_translate("MainWindow", "输出图像"))
-		'''
 		self.exitWindow.setText(_translate("MainWindow", "退出"))
-		
+	
 	def play_video(self):
 		
 		if not self.begin:
@@ -372,8 +602,6 @@ class Ui_MainWindow(QMainWindow):
 				self.capcheck = cv2.VideoCapture(self.filename)
 				self.wcapcheck = self.capcheck.get(cv2.CAP_PROP_FRAME_WIDTH)
 				self.hcapcheck = self.capcheck.get(cv2.CAP_PROP_FRAME_HEIGHT)
-				print(self.wcapcheck, self.hcapcheck)
-				print(self.capcheck.get(cv2.CAP_PROP_FRAME_COUNT))
 				if (self.hcapcheck == 576 and self.wcapcheck == 720):
 					break
 			
@@ -381,7 +609,6 @@ class Ui_MainWindow(QMainWindow):
 				return
 			
 			self.capcheck.release()
-			
 			self.playthread.receive_address(self.filename)
 			self.begin = True
 		
@@ -391,12 +618,12 @@ class Ui_MainWindow(QMainWindow):
 			self.play = True
 			self.screenShot.setDisabled(False)
 			self.stopVideoPlay.setDisabled(False)
-			
+		
 		else:
 			
 			self.playthread.MyTimer.stop()
 			self.play = False
-			
+	
 	def stop_video(self):
 		
 		self.playthread.stop_video()
@@ -410,15 +637,15 @@ class Ui_MainWindow(QMainWindow):
 		
 		self.horizontalSlider.setMaximum(VideoFrameNumber)
 		self.horizontalSlider.setMinimum(0)
-		
+	
 	def change_play(self):
 		
 		self.playnumberSignal.emit(self.horizontalSlider.value())
-		
+	
 	def scroll_bar(self, scrollnumber):
 		
 		self.horizontalSlider.setValue(int(scrollnumber))
-		
+	
 	def disconnect_horizontalSlider(self):
 		
 		self.playthread.ScrollBarSignal.disconnect()
@@ -426,7 +653,7 @@ class Ui_MainWindow(QMainWindow):
 	def connect_horizontalSlider(self):
 		
 		self.playthread.ScrollBarSignal.connect(self.scroll_bar)
-		
+	
 	def set_temperature(self):
 		
 		high = self.maxTemperature.value()
@@ -434,7 +661,7 @@ class Ui_MainWindow(QMainWindow):
 		high = float('%.2f' % high)
 		low = float('%.2f' % low)
 		self.temperatureSignal.emit(high, low)
-		
+	
 	def set_enabled(self):
 		
 		self.show3D.setDisabled(False)
@@ -475,8 +702,7 @@ class Ui_MainWindow(QMainWindow):
 	
 	def closeEvent(self, event):
 		
-		reply = QMessageBox.question(self, '提示', '您确定要退出么？', QMessageBox.Yes | QMessageBox.No,
-		                             QMessageBox.No)
+		reply = QMessageBox.question(self, '提示', '您确定要退出么？', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 		
 		if reply == QMessageBox.Yes:
 			self.calculatethread.deleteLater()
@@ -488,17 +714,18 @@ class Ui_MainWindow(QMainWindow):
 			self.newthread1.wait()
 			self.newthread2.wait()
 			event.accept()
+			
 		else:
 			event.ignore()
-		
+
+
 class PlayerThread(QtCore.QObject):
-	
 	InitSignal = QtCore.pyqtSignal(object)
 	PictureSignal = QtCore.pyqtSignal(object)
 	ScrollBarSignal = QtCore.pyqtSignal(object)
 	TocalculateSignal = QtCore.pyqtSignal(object)
 	
-	def __init__(self, parant = None):
+	def __init__(self, parant=None):
 		
 		super().__init__(parant)
 		
@@ -514,7 +741,7 @@ class PlayerThread(QtCore.QObject):
 		self.printscreen = None
 	
 	def receive_address(self, address):
-	
+		
 		self.address = address
 		self.cap = cv2.VideoCapture(self.address)
 		self.VideoFrameNumber = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -522,26 +749,25 @@ class PlayerThread(QtCore.QObject):
 	def video_play(self):
 		
 		if not self.begin:
-			
 			self.InitSignal.emit(self.VideoFrameNumber)
 			self.begin = True
 		
 		if self.ischanged:
 			self.cap.set(cv2.CAP_PROP_POS_FRAMES, int(self.playnumber))
 			self.ischanged = False
-			
+		
 		if self.stopchanged or self.cap.get(cv2.CAP_PROP_POS_FRAMES) == self.cap.get(cv2.CAP_PROP_FRAME_COUNT):
 			self.cap.release()
 			self.cap = cv2.VideoCapture(self.address)
 			self.stopchanged = False
-			
+		
 		self.ret, self.image = self.cap.read()
 		self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
 		self.Qqimage = QtGui.QImage(self.image.data, self.image.shape[1], self.image.shape[0],
-							   QtGui.QImage.Format_RGB888)
+		                            QtGui.QImage.Format_RGB888)
 		self.PictureSignal.emit(self.Qqimage)
 		self.ScrollBarSignal.emit(self.cap.get(cv2.CAP_PROP_POS_FRAMES))
-
+	
 	def continue_pause(self):
 		
 		if not self.__pause:
@@ -549,7 +775,7 @@ class PlayerThread(QtCore.QObject):
 		
 		else:
 			self.__pause = False
-			
+	
 	def stop_video(self):
 		
 		self.MyTimer.stop()
@@ -558,33 +784,32 @@ class PlayerThread(QtCore.QObject):
 		self.image = np.ones((576, 720, 3), np.uint8) * 255
 		self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
 		self.Stopimage = QtGui.QImage(self.image.data, self.image.shape[1], self.image.shape[0],
-								 QtGui.QImage.Format_RGB888)
+		                              QtGui.QImage.Format_RGB888)
 		self.PictureSignal.emit(self.Stopimage)
 		self.ScrollBarSignal.emit(0)
-		
+	
 	def change_play(self, playnumber):
 		
 		self.ischanged = True
 		self.playnumber = playnumber
-		
+	
 	def screen_shot(self):
 		
 		self.printscreen = self.image
 		self.TocalculateSignal.emit(self.printscreen)
-		
+
 
 class CalculateThread(QtCore.QObject):
-	
 	graypictureSignal = QtCore.pyqtSignal(object)
 	D3DpictureSignal = QtCore.pyqtSignal(object)
 	contourpictureSignal = QtCore.pyqtSignal(object)
 	originalpictureSignal = QtCore.pyqtSignal(object)
 	
-	def __init__(self, parent = None):
+	def __init__(self, parent=None):
 		
 		super().__init__(parent)
-		self.image = np.ones((576, 720, 3), np.uint8) *255
-		self.gray = np.ones((576, 720, 3), np.uint8) *255
+		self.image = np.ones((576, 720, 3), np.uint8) * 255
+		self.gray = np.ones((576, 720, 3), np.uint8) * 255
 		self.mask = cv2.imread('mask.png', cv2.IMREAD_GRAYSCALE)
 		
 		self.high = 30.0
@@ -608,7 +833,7 @@ class CalculateThread(QtCore.QObject):
 		
 		self.D3D = None
 		self.contour = None
-		
+	
 	def get_picture(self, picture):
 		
 		self.image = picture.copy()
@@ -618,12 +843,11 @@ class CalculateThread(QtCore.QObject):
 		self.gray = cv2.inpaint(self.gray, self.mask, 3, cv2.INPAINT_TELEA)
 		self.rot = cv2.cvtColor(self.rot, cv2.COLOR_BGR2GRAY)
 		self.barheight, self.barwidth = self.rot.shape[:2]
-		self.color = self.rot.sum(axis = 1)
+		self.color = self.rot.sum(axis=1)
 		self.color = self.color / self.barwidth
 		self.color = [max(self.color), min(self.color)]
 		self.temperature = [self.high, self.low]
 		self.temperaturedict = dict(zip(self.temperature, self.color))
-		print(self.temperaturedict)
 		
 		self.gray = cv2.GaussianBlur(self.gray, (0, 0), 15)
 		if self.temperaturedict[self.high] - self.temperaturedict[self.low]:
@@ -633,23 +857,16 @@ class CalculateThread(QtCore.QObject):
 		self.renovationcontour = True
 		
 		self.originalpictureSignal.emit(self.image)
-		
-		# plt.close()
-		# plt.imshow(self.image)
-		# plt.show()
-		# plt.close()
-		# plt.clf()
 	
 	def receive_temperature(self, high, low):
 		
 		self.high = high
 		self.low = low
-		print(self.high, self.low)
-		
+	
 	def draw_gray(self):
 		
 		self.graypictureSignal.emit(self.gray)
-		
+	
 	def draw_3D(self):
 		
 		if self.renovation3D:
@@ -666,24 +883,13 @@ class CalculateThread(QtCore.QObject):
 					self.D3D1[col3d][row3d] = self.low + (self.temp3D - self.temperaturedict[self.low]) * self.k
 			self.renovation3D = False
 		self.D3DpictureSignal.emit(self.D3D1)
-		
-		# self.x3D = np.arange(0, self.picturewidth3D, 1)
-		# self.y3D = np.arange(0, self.pictureheight3D, 1)
-		# self.x3D, self.y3D = np.meshgrid(self.x3D, self.y3D)
-		# self.D3D1 = cv2.flip(self.D3D1, 0)
-		# self.fig3d = plt.figure()
-		# self.ax = Axes3D(self.fig3d)
-		# self.ax.plot_surface(self.x3D, self.y3D, self.D3D1[self.y3D, self.x3D], rstride=2, cstride=2, cmap='rainbow')
-		# plt.show()
-		# plt.close()
-		# plt.clf()
 	
 	def draw_contour(self):
 		
 		if self.renovationcontour:
 			
 			self.contour = self.gray.copy()
-			self.contour = self.contour[40:530,30:670]
+			self.contour = self.contour[40:530, 30:670]
 			
 			self.pictureheight, self.picturewidth = self.contour.shape[:2]
 			self.contour1 = np.zeros(self.contour.shape, np.float_)
@@ -693,18 +899,20 @@ class CalculateThread(QtCore.QObject):
 					self.contour1[col][row] = self.low + (self.temp - self.temperaturedict[self.low]) * self.k
 					self.renovationcontour = False
 		self.contourpictureSignal.emit(self.contour1)
-		
-		# self.xcontour = np.arange(0, self.picturewidth, 1)
-		# self.ycontour = np.arange(0, self.pictureheight, 1)
-		# self.xcontour, self.ycontour = np.meshgrid(self.xcontour, self.ycontour)
-		# print(self.contour1.max())
-		# self.contour1 = cv2.flip(self.contour1, 0)
-		# print(self.contour1.max())
-		#
-		# self.contourline = plt.contour(self.xcontour, self.ycontour, self.contour1[self.ycontour, self.xcontour], 10,
-		#                         colors = 'black', linewidths = 1)
-		# plt.clabel(self.contourline, inline = True, inline_spacing = 5, fontsize = 10, fmt = '%.1f')
-		# plt.contourf(self.xcontour, self.ycontour, self.contour1[self.ycontour, self.xcontour], 10, cmap='rainbow')
-		# plt.show()
-		# plt.close()
-		# plt.clf()
+
+
+if __name__ == '__main__':
+	
+	class MyMainWindow(Ui_MainWindow):
+		def __init__(self, parent=None):
+			super().__init__()
+			self.setupUi(self)
+	
+	
+	app = QApplication(sys.argv)
+	
+	mainWindow = MyMainWindow()
+	
+	mainWindow.show()
+	
+	sys.exit(app.exec())
